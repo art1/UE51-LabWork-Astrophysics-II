@@ -1,0 +1,46 @@
+Hello,
+
+Here in the attached script that you used to make the observations (renamed with tmp at the end if it does not pass by email) and the resulting data file.
+
+You now need to make a map. Why write a python script
+
+1. read the data file (take inspiration from the script I sent you)
+
+2. to loop over all the scores in the file
+why I said that you can recover all the spectra (and their metadata) from a list:
+series = data [ "series"]
+you can then iterate over all the elements contained in series, that is to say the different spectra and their meta data with:
+
+for spec in series:
+
+3, for each spectrum, recover the offset (key words "Azoff" and "Eloff") and flow spectrum (sum of the spectrum is he even attached to the key word "value", see the example script I gave you given).
+And store them in three different vectors.
+
+4. draw the map using motplotlib:
+    plt.clf ()
+    plt.pcolormesh (xi, yi, zi) # here xi and yi are the vectors containing the offsets and zi contains the stream.
+    plt.colorbar ()
+    plt.scatter (x, y, c = z, s = 100, vmin = zi.min (), vmax = zi.max ())
+    plt.contour (xi, yi, zi)
+    plt.xlabel (azimuth ')
+    plt.ylabel ( 'elevation')
+    plt.title ( 'Solar flow map')
+    filenametmp outputdir + = + "/" + date + ". png"
+    print "backup file", filenametmp
+    plt.savefig (filenametmp, format = 'png')
+
+Then it will write a script for a Gaussian fit to the data. For this we can use an optimization engine as optimize.leastsq ().
+This means first defining a Gaussian function that takes as parameters:
+-offset azimuth
+-offset in elevation
+-width according to the major axis
+-width following the minor axis
+-rotation
+-flux to zero (that is to say that there may be a non-zero flow noise of the sky out of the sun)
+-flux sun (maximum flow of the Gaussian)
+
+And then use optimize.leastsq () to adjust the parameters of this function to the data.
+
+If you have questions do not hesitate to write me.
+
+Frédéric Boone

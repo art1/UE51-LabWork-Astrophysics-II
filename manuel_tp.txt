@@ -1,0 +1,103 @@
+COMMENTS WITH SRT (SMALL RADIO TELESCOPE)
+-----------
+
+* We log on the pc of control with
+login: srtuser
+password: srtuser
+PC Linux Redhat
+
+* To control the antenna and acquire the JAVA interface using data that is initialized with the command
+
+./launchSrt.sh
+
+* This interface can be used either in manual mode by clicking on the buttons or in script mode by clicking the button Rcmdfl (Read Command File).
+The interface will then read the text file named srt.cmd which must contain one statement per line.
+
+Sample observation script (srt.cmd)
+
+: 1420.5 4 freq
+: 75 galactic 29.0
+: Offset 0 0
+: record
+:thirty
+: roff
+
+
+explanations:
+-each line begins with ":"
+-line 1: the observation frequency 1420.5 MHz setting. The "4" stands for "Mode 4" and implies that the maximum band is used 1.2 MHz.
+-line 2: galactic coordinates of observation
+-line 3: offset in degrees relative to the coordinates previously entered
+-line 4: writing data in a file that is named with the date and be located in the / home / srtuser / SRT / rad /
+-line 5: wait 30 seconds (to integrate the signal)
+-line 6: end of recording data (file is closed)
+
+remarks:
+- Instead of giving coordinates galacitiques can provide local contact with "azel", eg "azel 85 40" to observe = 85 deg azimuth and elevation = 40 deg.
+- One can also directly appoint a source that is in the example catalog "Sun"
+- Between instructions "record" and "roff" one can observe several sources or information or offset. All comments will be saved in the same file.
+
+ANALYSIS OF DATA OBTAINED WITH SRT
+----------------------------------------
+
+* Data format:
+Data is written to a file in JSON format. Keywords used to find the date, contact information, etc ... the frequency of each spectrum.
+View file 2016: 09: 21: 13: 07: 25: 21.rad.
+
+
+* Sample python script to read the data in the file 2016: 09: 21: 13: 07: 25: 21.rad and plot the spectrum: see plotspec.py file.
+To execute:
+> Python plotspec.py
+
+
+
+OBSERVATIONS AVEC LE SRT (SMALL RADIO TELESCOPE)
+-----------
+
+* on se log sur le pc de control avec
+login: srtuser
+mot de passe: srtuser
+Le PC est sous Linux Redhat
+
+* Pour controler l'antenne et acquerir les données on utilise l'interface JAVA qui est initialisée avec la commande
+
+./launchSrt.sh
+
+* Cette interface peut être utilisée soit en mode manuel en cliquant sur les boutons, soit en mode script en cliquant sur le bouton Rcmdfl (Read Command File).
+L'interface va alors lire  le fichier texte nommé srt.cmd qui doit contenir une instruction par ligne.
+
+Exemple de script d'observation (srt.cmd):
+
+: freq 1420.5 4
+: galactic 75 29.0
+: offset 0 0
+: record
+:30
+: roff
+
+
+Explications:
+-chaque ligne commence par ":"
+-ligne 1: réglage de la fréquence d'observation à 1420,5 MHz. Le "4" signifie "mode 4" et implique que la bande maximale est utilisée: 1,2 MHz.
+-ligne 2: coordonnées galactiques de l'observation
+-ligne 3: offset en degrés par rapport aux coordonnées entrées précédemment
+-ligne 4: ecriture des données dans un fichier qui sera nommé avec la date et se trouvera dans le dossier /home/srtuser/srt/rad/
+-ligne 5: attendre 30 secondes (pour integrer le signal)
+-ligne 6: fin de l'enregistrement des données (fermeture du fichier)
+
+Remarques:
+- au lieu de donner des coordonnees galacitiques on peut donner des coordonnées locale avec "azel", par exemple: "azel 85 40" pour observer à azimuth=85 deg et élévation=40 deg.
+- on peut aussi nommer directement une source qui se trouve dans le catalogue par exemple "Sun"
+- entre les instructions "record" et "roff" on peut observer plusieurs sources ou coordonnées ou offset. Toutes les observations seront alors enregistrées dans le meme fichier.
+
+ANALYSE DES DONNEES OBTENUES AVEC LE SRT
+----------------------------------------
+
+*format des données:
+Les données sont écrites dans un fichier au format JSON. Des mots clefs permettent de retrouver la date, les coordonnées, la frequence etc... de chaque spectre.
+Voir le fichier 2016:09:21:13:07:25:21.rad.
+
+
+*Exemple de script python pour lire les données dans le fichier 2016:09:21:13:07:25:21.rad et tracer le spectre: voir le fichier plotspec.py.
+Pour l'excuter:
+> python plotspec.py
