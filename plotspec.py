@@ -35,7 +35,8 @@ for spec in series:
 
     x.append(azOff)
     y.append(elOff)
-    z.append(spec["value"])
+
+    z.append(sum(spec["value"])/len(spec["value"]))
 
 print z
 
@@ -43,23 +44,31 @@ print z
 # pour tracer le spectre:
 ###########
 # remove outer 42 elements to match array dimensions and ditch the first and last measurements
-i = 0
-for i in range(0, len(z)):
-    j=0
-    while j < 42:
-        del z[i][j]
-        del z[i][len(z[i])-j-1]
-        j += 1
-
-print z
+# i = 0
+# for i in range(0, len(z)):
+#     j=0
+#     while j < 42:
+#         del z[i][j]
+#         del z[i][len(z[i])-j-1]
+#         j += 1
+#
+# print z
 # convert lists to numpy arrays (for the plots)
 xi = numpy.asarray(x)
 yi = numpy.asarray(y)
-zi = numpy.asarray(z)
+zi = numpy.array(z)
+
+#xi = numpy.unique(xi)
+#yi = numpy.unique(yi)
+print len(xi)
+print len(yi)
+X,Y = numpy.meshgrid(xi,yi)
+Z=zi.reshape(len(yi),len(xi))
 
 
 plt.clf()
-plt.pcolormesh(xi, yi, zi) # here xi and yi are the vectors containing the offsets and zi contains the stream.
+plt.pcolormesh(X, Y, Z) # here xi and yi are the vectors containing the offsets and zi contains the stream.
+plt.show()
 plt.colorbar()
 # normalize the zi array for the scatter plot
 maxLen = zi.max()
