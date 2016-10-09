@@ -36,22 +36,29 @@ for spec in series:
     azOff = spec["azOff"]
     elOff = spec["elOff"]
 
-
-    print "az: %d el: %d" %(azOff, elOff)
-
-    # x.append(azOff)
-    # y.append(elOff)
-
     # use only every third value
     if (azOff != azOld):
+        print "\n"
         # print "appending "
         # print i
-        z.append(sum(spec["value"])/len(spec["value"]))
+        # get maximum value in one value set, and ditch the outer (small) values
+        val = spec["value"]
+        threshold = max(val)-(max(val)/3)
+        # print "max: %d, threshold: %d" %(max(val),threshold)
+        j = 0
+        while j < len(val):
+            if val[j] < threshold:
+                # print "deleting value at %d", i
+                del val[j]
+            j += 1
+        # print len(val)
+
+        z.append(sum(val)/len(val))
         x.append(azOff)
         y.append(elOff)
-    # i = i+1
+    i = i+1
+    print "%d: az: %d el: %d" %(i,azOff, elOff)
     azOld = azOff
-    elOld = elOff
 print x
 print y
 print z
@@ -82,10 +89,6 @@ print len(yi)
 print len(zi)
 
 X,Y = numpy.meshgrid(xi,yi)
-
-print zi.shape
-print xi.shape
-print yi.shape
 Z=zi.reshape(len(yi),len(xi))
 
 
@@ -94,17 +97,16 @@ plt.pcolormesh(X, Y, Z) # here xi and yi are the vectors containing the offsets 
 #plt.show()
 plt.colorbar()
 # normalize the zi array for the scatter plot
-maxLen = zi.max()
-zi /= maxLen
-for val in numpy.nditer(zi, op_flags=['readwrite']):
-    if val < 0:
-        val[...] = 0
-    elif val > 1:
-        val[...] = 1
+# maxLen = zi.max()
+# zi /= maxLen
+# for val in numpy.nditer(zi, op_flags=['readwrite']):
+#     if val < 0:
+#         val[...] = 0
+#     elif val > 1:
+#         val[...] = 1
 
-plt.scatter(X, Y, c = Z, s = 100, vmin = zi.min(), vmax = zi.max())
-# plt.show()
-plt.contour(X, Y, Z, 200)
+plt.scatter(X, Y, c = Z, s = 100, vmin = Z.min(), vmax = Z.max())
+plt.contour(X, Y, Z, 1000)
 plt.xlabel( 'azimuth')
 plt.ylabel( 'elevation')
 plt.title( 'Solar flow map')
