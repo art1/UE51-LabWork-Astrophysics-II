@@ -26,6 +26,9 @@ y = list()
 z = list()
 
 #read the data in three arrays
+i=0
+azOld=0
+elOld=0
 for spec in series:
     # date = spec["date"]
     # date = (date.rsplit(':',1))[0]
@@ -33,11 +36,24 @@ for spec in series:
     azOff = spec["azOff"]
     elOff = spec["elOff"]
 
-    x.append(azOff)
-    y.append(elOff)
 
-    z.append(sum(spec["value"])/len(spec["value"]))
+    print "az: %d el: %d" %(azOff, elOff)
 
+    # x.append(azOff)
+    # y.append(elOff)
+
+    # use only every third value
+    if (azOff != azOld):
+        # print "appending "
+        # print i
+        z.append(sum(spec["value"])/len(spec["value"]))
+        x.append(azOff)
+        y.append(elOff)
+    # i = i+1
+    azOld = azOff
+    elOld = elOff
+print x
+print y
 print z
 
 ###########
@@ -56,19 +72,26 @@ print z
 # convert lists to numpy arrays (for the plots)
 xi = numpy.asarray(x)
 yi = numpy.asarray(y)
-zi = numpy.array(z)
+zi = numpy.asarray(z)
 
-#xi = numpy.unique(xi)
-#yi = numpy.unique(yi)
+xi = numpy.unique(xi)
+yi = numpy.unique(yi)
+
 print len(xi)
 print len(yi)
+print len(zi)
+
 X,Y = numpy.meshgrid(xi,yi)
+
+print zi.shape
+print xi.shape
+print yi.shape
 Z=zi.reshape(len(yi),len(xi))
 
 
 plt.clf()
 plt.pcolormesh(X, Y, Z) # here xi and yi are the vectors containing the offsets and zi contains the stream.
-plt.show()
+#plt.show()
 plt.colorbar()
 # normalize the zi array for the scatter plot
 maxLen = zi.max()
@@ -79,8 +102,9 @@ for val in numpy.nditer(zi, op_flags=['readwrite']):
     elif val > 1:
         val[...] = 1
 
-plt.scatter(xi, yi, c = zi, s = 100, vmin = zi.min(), vmax = zi.max())
-plt.contour(xi, yi, zi, 300)
+plt.scatter(X, Y, c = Z, s = 100, vmin = zi.min(), vmax = zi.max())
+# plt.show()
+plt.contour(X, Y, Z, 200)
 plt.xlabel( 'azimuth')
 plt.ylabel( 'elevation')
 plt.title( 'Solar flow map')
