@@ -2,8 +2,6 @@ COMMENTS WITH SRT (SMALL RADIO TELESCOPE)
 -----------
 
 * We log on the pc of control with
-login: srtuser
-password: srtuser
 PC Linux Redhat
 
 * To control the antenna and acquire the JAVA interface using data that is initialized with the command
@@ -55,8 +53,6 @@ OBSERVATIONS AVEC LE SRT (SMALL RADIO TELESCOPE)
 -----------
 
 * on se log sur le pc de control avec
-login: srtuser
-mot de passe: srtuser
 Le PC est sous Linux Redhat
 
 * Pour controler l'antenne et acquerir les données on utilise l'interface JAVA qui est initialisée avec la commande
