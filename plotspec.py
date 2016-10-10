@@ -13,6 +13,7 @@ from numpy import array
 from scipy.interpolate import interp2d
 
 
+
 filename = "2016:09:28:07:49:24:28.rad"
 json_data=open(filename)
 data=json.load(json_data)
@@ -31,9 +32,9 @@ elOld=-4
 first=True
 sumVal=list()
 val = list()
+
 for spec in series:
     # ditch the first measurement, we start at -4/-4 offset (at the second measurement)
-    # print "%d:" %i
     if not(first):
         # we get the values and apply a threshold filter
         azOff = spec["azOff"]
@@ -44,21 +45,19 @@ for spec in series:
         j = 0
         while j < len(val):
             if val[j] < threshold:
-                # print "deleting value at %d", i
                 del val[j]
             j += 1
         # we compare the old offset values to the current one, if they are the same
-        # we just append them to the other values
+        # we just append them to the other values ( basically summing all the values with the same elevation and azimuth)
         if ((azOld==azOff) and (elOld==elOff)):
             sumVal.append(sum(val)/len(val))
         else :
-        # else we append them to the x y z vectors
+        # else we append them to the x y z vectors and initialize a new list
             z.append(sum(sumVal)/len(sumVal))
             x.append(azOff)
             y.append(elOff)
             sumVal=list()
-            print "summing..."
-        print "az: %d el: %d" %(azOff, elOff)
+        # print "az: %d el: %d" %(azOff, elOff)
         azOld=azOff
         elOld=elOff
     else:
@@ -97,14 +96,7 @@ plt.clf()
 plt.pcolormesh(X, Y, Z) # here xi and yi are the vectors containing the offsets and zi contains the stream.
 #plt.show()
 plt.colorbar()
-# normalize the zi array for the scatter plot
-# maxLen = zi.max()
-# zi /= maxLen
-# for val in numpy.nditer(zi, op_flags=['readwrite']):
-#     if val < 0:
-#         val[...] = 0
-#     elif val > 1:
-#         val[...] = 1
+
 
 plt.scatter(X, Y, c = Z, s = 100, vmin = Z.min(), vmax = Z.max())
 plt.contour(X, Y, Z, 1000)
