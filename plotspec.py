@@ -18,8 +18,7 @@ json_data=open(filename)
 data=json.load(json_data)
 series=data["series"]
 json_data.close()
-totflux=0.0
-ns = 0
+
 
 x = list()
 y = list()
@@ -27,21 +26,18 @@ z = list()
 
 #read the data in three arrays
 i=0
-azOld=0
-elOld=0
+azOld=-4    # -4 because that's the offset where we want to start
+elOld=-4
+first=True
+sumVal=list()
+val = list()
 for spec in series:
-    # date = spec["date"]
-    # date = (date.rsplit(':',1))[0]
-    # mode = spec["digital"]
-    azOff = spec["azOff"]
-    elOff = spec["elOff"]
-
-    # use only every third value
-    if (azOff != azOld):
-        print "\n"
-        # print "appending "
-        # print i
-        # get maximum value in one value set, and ditch the outer (small) values
+    # ditch the first measurement, we start at -4/-4 offset (at the second measurement)
+    # print "%d:" %i
+    if not(first):
+        # we get the values and apply a threshold filter
+        azOff = spec["azOff"]
+        elOff = spec["elOff"]
         val = spec["value"]
         threshold = max(val)-(max(val)/3)
         # print "max: %d, threshold: %d" %(max(val),threshold)
@@ -51,14 +47,28 @@ for spec in series:
                 # print "deleting value at %d", i
                 del val[j]
             j += 1
-        # print len(val)
+        # we compare the old offset values to the current one, if they are the same
+        # we just append them to the other values
+        if ((azOld==azOff) and (elOld==elOff)):
+            sumVal.append(sum(val)/len(val))
+        else :
+        # else we append them to the x y z vectors
+            z.append(sum(sumVal)/len(sumVal))
+            x.append(azOff)
+            y.append(elOff)
+            sumVal=list()
+            print "summing..."
+        print "az: %d el: %d" %(azOff, elOff)
+        azOld=azOff
+        elOld=elOff
+    else:
+        first=False
+    i+=1
+# now we append the last summed values
+z.append(sum(sumVal)/len(sumVal))
+x.append(azOff)
+y.append(elOff)
 
-        z.append(sum(val)/len(val))
-        x.append(azOff)
-        y.append(elOff)
-    i = i+1
-    print "%d: az: %d el: %d" %(i,azOff, elOff)
-    azOld = azOff
 print x
 print y
 print z
@@ -66,16 +76,6 @@ print z
 ###########
 # pour tracer le spectre:
 ###########
-# remove outer 42 elements to match array dimensions and ditch the first and last measurements
-# i = 0
-# for i in range(0, len(z)):
-#     j=0
-#     while j < 42:
-#         del z[i][j]
-#         del z[i][len(z[i])-j-1]
-#         j += 1
-#
-# print z
 # convert lists to numpy arrays (for the plots)
 xi = numpy.asarray(x)
 yi = numpy.asarray(y)
@@ -88,6 +88,7 @@ print len(xi)
 print len(yi)
 print len(zi)
 
+# reshapes the totalflux values to match the 5x5 grid
 X,Y = numpy.meshgrid(xi,yi)
 Z=zi.reshape(len(yi),len(xi))
 
