@@ -171,6 +171,6 @@ plt.title( 'Solar flow map')
 mark = plt.plot(peak[0],peak[1],'bx',mew=2,ms=15,label="predicted maximum")
 plt.legend(numpoints=1)
 plt.show()
-# filenametmp=date + ".png"
+# filenametmp="output" + ".png"
 # print "backup file", filenametmp
 # plt.savefig (filenametmp, format = 'png')
