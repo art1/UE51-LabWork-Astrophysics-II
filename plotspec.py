@@ -14,14 +14,15 @@ from numpy import array
 import scipy.optimize as scp
 
 
-# we use two different functions for our gaussian fit process
+# we use two different functions for the gaussian fit process
 # gaussian2D is used to create a gaussian2D curve with given Parameters
-# gaussian2D_CurveFit is used for the curve fitting process (we need to use ravel here)
+# gaussian2D_CurveFit is only used for the curve fitting itself (we need to use ravel here)
 
 
 # gives a gaussion2D for given Parameters
 # see here: https://en.wikipedia.org/wiki/Gaussian_function#Meaning_of_parameters_for_the_general_equation
-# we use lambda function for az0 and el0
+# we use a lambda function as return and pass az0 and el0 later during the function call
+# to get the gaussion fitted values for each az/el set
 def gaussian2D(offAz, offEl, majWidth, minWidth, thetaRot, offsetZero, amp):
     # calculate the general gaussian parameters
     # to check: this could be probably done also by just calculating the mean vector
