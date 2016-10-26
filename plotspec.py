@@ -151,24 +151,24 @@ print "estimated covariance matrix: ", covmat
 # we create the dataset with the predicted parameters
 fitted = gaussian2D(*pparam)(az0,el0)
 peak = [pparam[0],pparam[1]]
-peakAz = pparam[0]
-peakEl = pparam[1]
-print "fitted: ", fitted
 print "peak: ",peak
+
+# normalize and shift it with zeroOffset to use full range between 0 and 1
+fitted = normalizeAndMove(fitted)
 
 # plot the stuff now
 plt.clf()
-plt.pcolormesh(X, Y, fitted) # here xi and yi are the vectors containing the offsets and fitted contains the fitted data
-#plt.show()
+# here xi and yi are the vectors containing the offsets and fitted contains the fitted data
+plt.pcolormesh(X, Y, fitted)
 plt.colorbar()
-
 plt.scatter(X, Y, c = fitted, s = 100, vmin = fitted.min(), vmax = fitted.max())
 plt.contour(X, Y, fitted, 900)
-plt.xlabel( 'azimuth')
-plt.ylabel( 'elevation')
+plt.xlabel( 'azimuth offset')
+plt.ylabel( 'elevation offset')
 plt.title( 'Solar flow map')
 # plot the peak
-plt.plot(peakAz,peakEl,'bx',mew=2,ms=15)
+mark = plt.plot(peak[0],peak[1],'bx',mew=2,ms=15,label="predicted maximum")
+plt.legend(numpoints=1)
 plt.show()
 # filenametmp=date + ".png"
 # print "backup file", filenametmp
