@@ -141,7 +141,8 @@ el0 = copy.deepcopy(Y)
 
 # we guess initial parameters, sun should be in the middle, so azOff=elOff=0
 # also I guess the zero offset should be zero...
-paramGuess = [0,0,1,1,1,0,1]
+paramGuess = [0,0,1,1,0,0,1]
+# data,offAz, offEl, majWidth, minWidth, thetaRot, offsetZero, amp
 
 # now we run curve_fit to get the predicted parameters (starting off on our guessed ones)
 # curve_fit uses leastsq internally
