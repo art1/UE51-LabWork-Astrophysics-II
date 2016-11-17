@@ -153,16 +153,25 @@ print "estimated covariance matrix: ", covmat
 # we create the dataset with the predicted parameters
 fitted = gaussian2D(*pparam)(az0,el0)
 peak = [pparam[0],pparam[1]]
-print "peak: ",peak
+print "peak: ", peak
 
 # normalize and shift it with zeroOffset to use full range between 0 and 1
 fitted = normalizeAndMove(fitted)
+
+# convert to Jansky units
+# Jansky at 1200 UTC at San Vito: 570 000 Jy in 1415 MHz
+fitted = 570000 * fitted
+# value seems to be correct, in range of what we expect according to
+# http://www.haystack.mit.edu/edu/undergrad/srt/SRT%20Projects/
+
 
 # plot the stuff now
 plt.clf()
 # here xi and yi are the vectors containing the offsets and fitted contains the fitted data
 plt.pcolormesh(X, Y, fitted)
-plt.colorbar()
+bar = plt.colorbar()
+bar.set_label('Jansky (10^-26 W/Hz/m^2)', rotation=270)
+
 plt.scatter(X, Y, c = fitted, s = 100, vmin = fitted.min(), vmax = fitted.max())
 plt.contour(X, Y, fitted, 900)
 plt.xlabel( 'azimuth offset')
