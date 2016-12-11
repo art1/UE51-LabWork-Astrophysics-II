@@ -53,6 +53,28 @@ def normalizeAndMove(z):
     return res
 
 
+# calculate the RMS for a given arrays
+def calculateRMS(input):
+    tmp = 0
+    for val in input:
+        tmp = tmp + (val ** 2)
+    #print tmp
+    tmp = tmp/ len(input)
+    res = numpy.sqrt(tmp)
+    return res
+
+# calculate standard deviation for the RMS
+def calcSTDev(input):
+    values = copy.deepcopy(input)
+    rms = calculateRMS(values)
+    # now calculate the standard deviation
+    tmp = 0
+    for val in values:
+        tmp = tmp + ((val - rms) ** 2)
+    tmp = tmp / len(values)
+    stdev = numpy.sqrt(tmp)
+    return stdev
+
 
 filename = "2016:09:28:07:49:24:28.rad"
 json_data=open(filename)
@@ -72,6 +94,7 @@ elOld=-4
 first=True
 sumVal=list()
 val = list()
+stdDev = list()
 
 for spec in series:
     # ditch the first measurement, we start at -4/-4 offset (at the second measurement)
@@ -87,16 +110,21 @@ for spec in series:
             if val[j] < threshold:
                 del val[j]
             j += 1
+
         # we compare the old offset values to the current one, if they are the same
         # we just append them to the other values ( basically summing all the values with the same elevation and azimuth)
         if ((azOld==azOff) and (elOld==elOff)):
             sumVal.append(sum(val)/len(val))
+            # we calcluate the RMS for each measurement
+            # stdDev.append(calcSTDev(val))
         else :
         # else we append them to the x y z vectors and initialize a new list
+            # stdDev.append(calcSTDev(val))
+            stdDev.append(calcSTDev(sumVal))
             z.append(sum(sumVal)/len(sumVal))
             x.append(azOff)
             y.append(elOff)
-            sumVal=list()
+            sumVal = list()
         # print "az: %d el: %d" %(azOff, elOff)
         azOld=azOff
         elOld=elOff
@@ -107,6 +135,27 @@ for spec in series:
 z.append(sum(sumVal)/len(sumVal))
 x.append(azOff)
 y.append(elOff)
+# stdDev.append(calcSTDev(val))
+print "sumval"
+print sumVal
+print "maxVal"
+maxJnsk = max(z)*570000
+print maxJnsk
+stdDev.append(calcSTDev(sumVal))
+print stdDev
+
+crabNebula = 968.0
+stdDeviation = 12.8 # per 8seconds integration time
+# error is proportional to 1/sqrt(integrationtime)
+print "integration time"
+print (crabNebula/stdDeviation)*8.0
+
+# TODO inverse quare root shift
+
+
+# now we average the standard deviation
+standardDeviation = sum(stdDev)/len(stdDev)
+print standardDeviation
 
 print x
 print y
@@ -160,6 +209,7 @@ fitted = normalizeAndMove(fitted)
 
 # convert to Jansky units
 # Jansky at 1200 UTC at San Vito: 570 000 Jy in 1415 MHz
+# we just say our maximum val equals the value measured by the San Vito station
 fitted = 570000 * fitted
 # value seems to be correct, in range of what we expect according to
 # http://www.haystack.mit.edu/edu/undergrad/srt/SRT%20Projects/
