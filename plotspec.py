@@ -155,7 +155,7 @@ print (crabNebula/stdDeviation)*8.0
 
 # now we average the standard deviation
 standardDeviation = sum(stdDev)/len(stdDev)
-print standardDeviation
+print "standardDeviation", standardDeviation
 
 print x
 print y
@@ -179,7 +179,7 @@ print len(zi)
 # reshapes the totalflux values to match the 5x5 grid
 X,Y = numpy.meshgrid(xi,yi)
 Z=zi.reshape(len(yi),len(xi))
-
+print "Z: ", Z
 # normalizes and accounts for zero offset (so we stretch the data from 0 to 1)
 Z = normalizeAndMove(Z)
 data = (X,Y)
@@ -229,6 +229,8 @@ print janskyScaleFactor
 # if yes, the printed values must be the same as the
 scaledZ = map(lambda g : g * janskyScaleFactor, z)
 print scaledZ
+
+
 
 
 # plot the stuff now
