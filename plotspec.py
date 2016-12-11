@@ -52,6 +52,12 @@ def normalizeAndMove(z):
     res /= resMax
     return res
 
+# only normalizes wrt to the maximum
+def normalizeData(z):
+    res = z
+    resMax = res.max()
+    res /= resMax
+    return res
 
 # calculate the RMS for a given arrays
 def calculateRMS(input):
@@ -207,12 +213,12 @@ peak = [pparam[0],pparam[1]]
 print "predicted peak: ", peak
 
 # normalize and shift it with zeroOffset to use full range between 0 and 1
-fitted = normalizeAndMove(fitted)
+fitted = normalizeData(fitted)
 
 # convert to Jansky units
 # Jansky at 1200 UTC at San Vito: 570 000 Jy in 1415 MHz
 # we just say our maximum val equals the value measured by the San Vito station
-fitted = 570000 * fitted
+#fitted = 570000 * fitted
 print fitted
 # value seems to be correct, in range of what we expect according to
 # http://www.haystack.mit.edu/edu/undergrad/srt/SRT%20Projects/
@@ -228,7 +234,10 @@ print janskyScaleFactor
 # the following two lines are just to check wether our scaleFactor is actually correct.
 # if yes, the printed values must be the same as the
 scaledZ = map(lambda g : g * janskyScaleFactor, z)
+
+fittedShit = fitted * max(z) * janskyScaleFactor
 print scaledZ
+print fittedShit
 
 
 
