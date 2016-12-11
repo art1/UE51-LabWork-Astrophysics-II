@@ -184,7 +184,7 @@ Z=zi.reshape(len(yi),len(xi))
 Z = normalizeAndMove(Z)
 data = (X,Y)
 
-# we need az0 and el0 for later lambda parse
+# we need az0 and el0 for the lambda function (when calculating the actual fit)
 az0 = copy.deepcopy(X)
 el0 = copy.deepcopy(Y)
 
@@ -195,14 +195,16 @@ paramGuess = [0,0,1,1,0,0,1]
 
 # now we run curve_fit to get the predicted parameters (starting off on our guessed ones)
 # curve_fit uses leastsq internally
+# we use ravel to shape the numpy array so we can use them for the fitting function
 pparam, covmat = scp.curve_fit(gaussian2D_CurveFit,data,numpy.ravel(Z),p0=paramGuess)
 print "predicted params: ",pparam
 print "estimated covariance matrix: ", covmat
 
 # we create the dataset with the predicted parameters
 fitted = gaussian2D(*pparam)(az0,el0)
+print fitted
 peak = [pparam[0],pparam[1]]
-print "peak: ", peak
+print "predicted peak: ", peak
 
 # normalize and shift it with zeroOffset to use full range between 0 and 1
 fitted = normalizeAndMove(fitted)
@@ -211,8 +213,22 @@ fitted = normalizeAndMove(fitted)
 # Jansky at 1200 UTC at San Vito: 570 000 Jy in 1415 MHz
 # we just say our maximum val equals the value measured by the San Vito station
 fitted = 570000 * fitted
+print fitted
 # value seems to be correct, in range of what we expect according to
 # http://www.haystack.mit.edu/edu/undergrad/srt/SRT%20Projects/
+
+# TODO the following stuff until scaledZ might be utter bullshit
+# since we were supposed to provide a scale factor for the conversion of
+# raw data with an arbitrary unit to Jansky, we calculate it in the next lines
+# this is only roughly correct, since we set the maximum peak of measured data
+# to be our Jansky peak - because the predicted peak in the plot is interpolated.
+# we also assume that the measured stuff is linear in scale
+janskyScaleFactor = 570000/max(z)
+print janskyScaleFactor
+# the following two lines are just to check wether our scaleFactor is actually correct.
+# if yes, the printed values must be the same as the
+scaledZ = map(lambda g : g * janskyScaleFactor, z)
+print scaledZ
 
 
 # plot the stuff now
