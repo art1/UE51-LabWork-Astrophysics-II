@@ -59,32 +59,26 @@ def normalizeData(z):
     res /= resMax
     return res
 
-# calculate the RMS for a given arrays
-def calculateRMS(input):
+# calculate the mean for values in given array
+def calculateMean(input):
     tmp = 0
-    # for val in input:
-    #     tmp = tmp + (val ** 2)
-    # #print tmp
-    # tmp = tmp/ len(input)
-    # res = numpy.sqrt(tmp)
-
     for val in input:
         tmp += val
     res = tmp /len(input)
-
     return res
 
 # calculate standard deviation for the RMS
 def calcSTDev(input):
-    values = copy.deepcopy(input)
-    rms = calculateRMS(values)
+    mean = calculateMean(input)
     # now calculate the standard deviation
     tmp = 0
-    for val in values:
-        tmp = tmp + ((val - rms) ** 2)
-    tmp = tmp / len(values)
+    for val in input:
+        tmp += ((val - mean) ** 2)
+    tmp = tmp / len(input)
     stdev = numpy.sqrt(tmp)
     return stdev
+
+#def getValueAt(az,el, array2D):
 
 
 filename = "2016:09:28:07:49:24:28.rad"
@@ -154,14 +148,11 @@ maxJnsk = max(z)*570000
 print maxJnsk
 stdDev.append(calcSTDev(sumVal))
 print "stdDev", stdDev
+print "len stdDev", len(stdDev)
 
-crabNebula = 968.0
+crabNebula = 968.0  # Jansky
 stdDeviation = 12.8 # per 8seconds integration time
-# error is proportional to 1/sqrt(integrationtime)
-print "integration time"
-print (crabNebula/stdDeviation)*8.0
 
-# TODO inverse quare root shift
 
 
 # now we average the standard deviation
@@ -236,7 +227,20 @@ print fitted
 # values seem to be correct, in range of what we expect according to
 # http://www.haystack.mit.edu/edu/undergrad/srt/SRT%20Projects/
 
+# now we're using the averaged standard deviation and calculate the RMS variations of the flux
+scaledStdDev = max(stdDev) * janskyScaleFactor
+print "scaledStdDev", scaledStdDev
+tau = 8.0           # integration time
+bandwidth = 1200000 # bandwidth in Hz
+SEFD = scaledStdDev * numpy.sqrt(tau * bandwidth)
+print "SEFD: ", SEFD
+#print "maxFitted: ", max(fitted)
+SNR = (570000 / SEFD) * numpy.sqrt(tau*bandwidth)
+print "SNR", SNR
 
+# now calculate integration time for crab nebula
+tau_cn = (((SNR * SEFD)/(crabNebula*numpy.sqrt(bandwidth)))**2)
+print "crabe nebula integration time: ", tau_cn
 
 
 # plot the stuff now
