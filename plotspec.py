@@ -62,11 +62,16 @@ def normalizeData(z):
 # calculate the RMS for a given arrays
 def calculateRMS(input):
     tmp = 0
+    # for val in input:
+    #     tmp = tmp + (val ** 2)
+    # #print tmp
+    # tmp = tmp/ len(input)
+    # res = numpy.sqrt(tmp)
+
     for val in input:
-        tmp = tmp + (val ** 2)
-    #print tmp
-    tmp = tmp/ len(input)
-    res = numpy.sqrt(tmp)
+        tmp += val
+    res = tmp /len(input)
+
     return res
 
 # calculate standard deviation for the RMS
@@ -109,7 +114,7 @@ for spec in series:
         azOff = spec["azOff"]
         elOff = spec["elOff"]
         val = spec["value"]
-        threshold = max(val)-(max(val)/3)
+        threshold = max(val)-(max(val)/4)
         # print "max: %d, threshold: %d" %(max(val),threshold)
         j = 0
         while j < len(val):
@@ -148,7 +153,7 @@ print "maxVal"
 maxJnsk = max(z)*570000
 print maxJnsk
 stdDev.append(calcSTDev(sumVal))
-print stdDev
+print "stdDev", stdDev
 
 crabNebula = 968.0
 stdDeviation = 12.8 # per 8seconds integration time
@@ -184,10 +189,8 @@ print len(zi)
 
 # reshapes the totalflux values to match the 5x5 grid
 X,Y = numpy.meshgrid(xi,yi)
-Z=zi.reshape(len(yi),len(xi))
-print "Z: ", Z
-# normalizes and accounts for zero offset (so we stretch the data from 0 to 1)
-Z = normalizeAndMove(Z)
+Z = zi.reshape(len(yi),len(xi))
+Z = normalizeData(Z)
 data = (X,Y)
 
 # we need az0 and el0 for the lambda function (when calculating the actual fit)
@@ -212,18 +215,13 @@ print fitted
 peak = [pparam[0],pparam[1]]
 print "predicted peak: ", peak
 
-# normalize and shift it with zeroOffset to use full range between 0 and 1
+# we normalize the fitted data again
 fitted = normalizeData(fitted)
 
 # convert to Jansky units
 # Jansky at 1200 UTC at San Vito: 570 000 Jy in 1415 MHz
 # we just say our maximum val equals the value measured by the San Vito station
-#fitted = 570000 * fitted
-print fitted
-# value seems to be correct, in range of what we expect according to
-# http://www.haystack.mit.edu/edu/undergrad/srt/SRT%20Projects/
 
-# TODO the following stuff until scaledZ might be utter bullshit
 # since we were supposed to provide a scale factor for the conversion of
 # raw data with an arbitrary unit to Jansky, we calculate it in the next lines
 # this is only roughly correct, since we set the maximum peak of measured data
@@ -231,13 +229,12 @@ print fitted
 # we also assume that the measured stuff is linear in scale
 janskyScaleFactor = 570000/max(z)
 print janskyScaleFactor
-# the following two lines are just to check wether our scaleFactor is actually correct.
-# if yes, the printed values must be the same as the
 scaledZ = map(lambda g : g * janskyScaleFactor, z)
-
-fittedShit = fitted * max(z) * janskyScaleFactor
+fitted = fitted * max(z) * janskyScaleFactor
 print scaledZ
-print fittedShit
+print fitted
+# values seem to be correct, in range of what we expect according to
+# http://www.haystack.mit.edu/edu/undergrad/srt/SRT%20Projects/
 
 
 
