@@ -97,6 +97,7 @@ i=0
 azOld=-4    # -4 because that's the offset where we want to start
 elOld=-4
 first=True
+crabNebula = 968.0  # Jansky
 sumVal=list()
 val = list()
 stdDev = list()
@@ -141,17 +142,13 @@ z.append(sum(sumVal)/len(sumVal))
 x.append(azOff)
 y.append(elOff)
 # stdDev.append(calcSTDev(val))
-print "sumval"
-print sumVal
 print "maxVal"
 maxJnsk = max(z)*570000
 print maxJnsk
 stdDev.append(calcSTDev(sumVal))
-print "stdDev", stdDev
-print "len stdDev", len(stdDev)
+#print "stdDev", stdDev
+#print "len stdDev", len(stdDev)
 
-crabNebula = 968.0  # Jansky
-stdDeviation = 12.8 # per 8seconds integration time
 
 
 
@@ -211,13 +208,13 @@ fitted = normalizeData(fitted)
 
 # convert to Jansky units
 # Jansky at 1200 UTC at San Vito: 570 000 Jy in 1415 MHz
-# we just say our maximum val equals the value measured by the San Vito station
+# we assume our maximum val equals the value measured by the San Vito station
 
 # since we were supposed to provide a scale factor for the conversion of
 # raw data with an arbitrary unit to Jansky, we calculate it in the next lines
 # this is only roughly correct, since we set the maximum peak of measured data
 # to be our Jansky peak - because the predicted peak in the plot is interpolated.
-# we also assume that the measured stuff is linear in scale
+# we also assume that the measurements are distributed linearly
 janskyScaleFactor = 570000/max(z)
 print janskyScaleFactor
 scaledZ = map(lambda g : g * janskyScaleFactor, z)
@@ -230,7 +227,7 @@ print fitted
 # now we're using the averaged standard deviation and calculate the RMS variations of the flux
 scaledStdDev = max(stdDev) * janskyScaleFactor
 print "scaledStdDev", scaledStdDev
-tau = 8.0           # integration time
+tau = 8.0           # integration time in seconds
 bandwidth = 1200000 # bandwidth in Hz
 SEFD = scaledStdDev * numpy.sqrt(tau * bandwidth)
 print "SEFD: ", SEFD
@@ -238,8 +235,8 @@ print "SEFD: ", SEFD
 SNR = (570000 / SEFD) * numpy.sqrt(tau*bandwidth)
 print "SNR", SNR
 
-# now calculate integration time for crab nebula
-tau_cn = (((SNR * SEFD)/(crabNebula*numpy.sqrt(bandwidth)))**2)
+# now calculate integration time for crab nebula, to detect we need at least SNR = 1
+tau_cn = (((1 * SEFD)/(crabNebula*numpy.sqrt(bandwidth)))**2)
 print "crabe nebula integration time: ", tau_cn
 
 
